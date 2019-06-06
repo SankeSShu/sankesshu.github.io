@@ -11,6 +11,7 @@
     <script src="https://www.kkkk1000.com/js/pixi4.8.2.js"></script>
     <script src="https://www.kkkk1000.com/js/spriteUtilities.js"></script>
     <script>
+        
         //创建一个 Pixi应用 需要的一些参数
         let option = {
             width: 400,
@@ -29,16 +30,17 @@
 
         let su = new SpriteUtilities(PIXI);
         //需要加载的雪碧图的地址（该图片服务器端已做跨域处理）
-        let imgURL = "https://github.com/SankeSShu/sankesshu.github.io/blob/master/index/LearningPixi-master/examples/images/Iori.png";
+        let imgURL = "images/Iori.png";
+        // let imgURL = "https://github.com/SankeSShu/sankesshu.github.io/blob/master/index/LearningPixi-master/examples/images/Iori.png";
 		//加载图像，加载完成后执行setup函数 
-        PIXI.loader.add(imgURL).load(setup);
-
+        // PIXI.loader.add(imgURL).load(setup);
+        PIXI.loader.add("imgURL").load(setup);
         //创建的精灵，会在多个函数中用到
         let Iori;
 
         function setup() {
             //创建纹理数组
-            let frames = su.filmstrip(imgURL, 32, 48);
+            let frames = su.filmstrip(imgURL, 45, 65);
             //使用sprite函数创建精灵
 
             Iori = su.sprite(frames);
