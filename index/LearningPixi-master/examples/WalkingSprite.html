@@ -29,17 +29,16 @@
 
         let su = new SpriteUtilities(PIXI);
         //需要加载的雪碧图的地址（该图片服务器端已做跨域处理）
-        // let imgURL = "/Users/lixun/demo/LearningPixi-master/examples/";
+        let imgURL = "https://github.com/SankeSShu/sankesshu.github.io/blob/master/index/LearningPixi-master/examples/images/Iori.png";
 		//加载图像，加载完成后执行setup函数 
-        PIXI.loader.add("images/Iori.png").load(setup);
-       
+        PIXI.loader.add(imgURL).load(setup);
+
         //创建的精灵，会在多个函数中用到
         let Iori;
 
         function setup() {
             //创建纹理数组
-            let frames = su.filmstrip("images/Iori.png", frameWidth, frameHeight, optionalPadding);
-
+            let frames = su.filmstrip(imgURL, 32, 48);
             //使用sprite函数创建精灵
 
             Iori = su.sprite(frames);
@@ -50,13 +49,13 @@
 			//添加精灵到舞台上
             stage.addChild(Iori);
             //设置精灵fps来改变动画效果的速度（默认值为12）
-            Iori.fps = 12;
+            Iori.fps = 11;
             //定义精灵的状态
             Iori.states = {
                 down: 0,
-                left: 3,
-                right: 6,
-                up: 9,
+                left: 4,
+                right: 8,
+                up: 12,
                 walkDown: [0, 2],
                 walkLeft: [3, 5],
                 walkRight: [6, 8],
