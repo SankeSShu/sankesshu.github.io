@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="zn">
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body>
+<div id="px-render"></div>
+<script src="../pixi/pixi.min.js"></script>
+<script src="../pixi/spriteUtilities.js"></script>
+<script>
+  // //创建一个 Pixi应用 需要的一些参数
+  // let option = {
+  //     width: 400,
+  //     height: 300,
+  //     transparent: true,
+  // }
+  //Aliases
+let Application = PIXI.Application,
+    Container = PIXI.Container,
+    loader = PIXI.loader,
+    resources = PIXI.loader.resources,
+    Graphics = PIXI.Graphics,
+    TextureCache = PIXI.utils.TextureCache,
+    Sprite = PIXI.Sprite,
+    Text = PIXI.Text,
+    TextStyle = PIXI.TextStyle;
+
+//Create a Pixi Application
+let app = new Application({ 
+    width: 512, 
+    height: 512,                       
+    antialiasing: true, 
+    transparent: false, 
+    resolution: 1
+  }
+);
+  //创建一个 Pixi应用
+  // let app = new PIXI.Application(option);
+//获取舞台
+let stage = app.stage;
+  //获取渲染器
+  let renderer = app.renderer;
+  let playground = document.getElementById('px-render');
+  //把 Pixi 创建的 canvas 添加到页面上
+  playground.appendChild(renderer.view);
+  let su = new SpriteUtilities(PIXI);
+  //需要加载的雪碧图的地址（该图片服务器端已做跨域处理）
+  let imgURL = "./images/boy.png";
+//加载图像，加载完成后执行setup函数 
+PIXI.loader
+.add("./images/treasureHunter.json")
+.add(imgURL)
+.load(setup);
+//创建的精灵，会在多个函数中用到
+let explorer,gameScene,blobs;
+// state, treasure, blobs, chimes, exit, player, dungeon,
+//     door, healthBar, message, gameScene, gameOverScene, enemies, id;
+function setup() {
+
+  gameScene = new Container();
+  app.stage.addChild(gameScene);
+  //Make the sprites and add them to the `gameScene`
+  //Create an alias for the texture atlas frame ids
+  id = resources["./images/treasureHunter.json"].textures;
+
+  //Dungeon
+  dungeon = new Sprite(id["dungeon.png"]);
+  gameScene.addChild(dungeon);
+
+  //Door
+  door = new Sprite(id["door.png"]); 
+  door.position.set(32, 0);
+  gameScene.addChild(door);
+
+  // //Explorer
+  // explorer = new Sprite(id["explorer.png"]);
+  // explorer.x = 68;
+  // explorer.y = gameScene.height / 2 - explorer.height / 2;
+  // explorer.vx = 0;
+  // explorer.vy = 0;
+  // gameScene.addChild(explorer);
+  
+  //Treasure
+  treasure = new Sprite(id["treasure.png"]);
+  treasure.x = gameScene.width - treasure.width - 48;
+  treasure.y = gameScene.height / 2 - treasure.height / 2;
+  gameScene.addChild(treasure);
+  
+  //创建纹理数组
+  let frames = su.filmstrip(imgURL,16,16);
+  //使用sprite函数创建精灵
+  explorer = su.sprite(frames);
+  explorer.vx = 0;
+  explorer.vy = 0;
+  //设置精灵的位置并将其添加到舞台上
+  explorer.position.set(32, 32);
+//添加精灵到舞台上
+  stage.addChild(explorer);
+  //设置精灵fps来改变动画效果的速度（默认值为12）
+  explorer.fps = 30;
+  //定义精灵的状态
+  explorer.states = {
+      down: 0,
+      left: 3,
+      right: 6,
+      up: 9,
+      walkDown: [0, 2],
+      walkLeft: [3, 5],
+      walkRight: [6, 8],
+      walkUp: [9, 11]
+  };
+  explorer.width = 30;
+  explorer.height= 30;
+  gameScene.addChild(explorer);
+  //Make the blobs
+  let numberOfBlobs = 6,
+      spacing = 48,
+      xOffset = 150,
+      speed = 2,
+      direction = 1;
+
+  //An array to store all the blob monsters
+  blobs = [];
+
+  //Make as many blobs as there are `numberOfBlobs`
+  for (let i = 0; i < numberOfBlobs; i++) {
+
+    //Make a blob
+    let blob = new Sprite(id["blob.png"]);
+
+//`xOffset`确定屏幕左侧
+//应添加第一个blob的点
+//根据`spacing`值水平对齐每个blob。
+//`xOffset`确定屏幕左侧的点
+//应该添加第一个blob
+    let x = spacing * i + xOffset;
+
+    //Give the blob a random y position
+    let y = randomInt(0, app.stage.height - blob.height);
+
+//设置blob的位置
+    blob.x = x;
+    blob.y = y;
+
+//设置blob的垂直速度。`direction`将是'1`或
+//`-1`。“1”表示敌人向下移动，“-1”表示blob将向上移动。
+// 将`direction`乘以`speed`确定blob的垂直方向
+    blob.vy = speed * direction;
+
+//反转下一个blob的方向
+    direction *= -1;
+
+//将blob推入`blobs`数组
+    blobs.push(blob);
+
+//将blob添加到`gameScene`
+    gameScene.addChild(blob);
+  }
+
+//创建hp条
+  healthBar = new Container();
+  healthBar.position.set(app.stage.width - 170, 4)
+  gameScene.addChild(healthBar);
+
+//创建黑色背景矩形
+  let innerBar = new Graphics();
+  innerBar.beginFill(0x000000);
+  innerBar.drawRect(0, 0, 128, 8);
+  innerBar.endFill();
+  healthBar.addChild(innerBar);
+
+//创建前红色矩形
+  let outerBar = new Graphics();
+  outerBar.beginFill(0xFF3300);
+  outerBar.drawRect(0, 0, 128, 8);
+  outerBar.endFill();
+  healthBar.addChild(outerBar);
+
+  healthBar.outer = outerBar;
+
+//创建`gameOver`场景
+  gameOverScene = new Container();
+  app.stage.addChild(gameOverScene);
+
+//在游戏首次启动时，让“gameOver”场景不可见
+  gameOverScene.visible = false;
+
+  //创建文本精灵并将其添加到`gameOver`场景
+  let style = new TextStyle({
+    fontFamily: "Futura",
+    fontSize: 64,
+    fill: "white"
+  });
+  message = new Text("The End!", style);
+  message.x = 120;
+  message.y = app.stage.height / 2 - 32;
+  gameOverScene.addChild(message);
+
+
+
+  //捕获键盘箭头键
+  let left = keyboard(37),
+      up = keyboard(38),
+      right = keyboard(39),
+      down = keyboard(40);
+
+  //左箭头键 按下 
+  left.press = () => {
+      //播放精灵的 walkLeft 动画序列并设置精灵的速度
+      explorer.playAnimation(explorer.states.walkLeft);
+      explorer.vx = -5;
+      explorer.vy = 0;
+  };
+  //左箭头键 释放 
+  left.release = () => { 
+      //如果左箭头已被释放，右箭头未按下，并且精灵没有垂直移动，
+//则将 vx 设置为0来停止精灵移动，然后显示精灵的静态状态 left
+      if (!right.isDown && explorer.vy === 0) {
+          explorer.vx = 0;
+          explorer.show(explorer.states.left);
+      }
+  };
+  //其余的箭头键遵循相同的格式
+  //Up
+  up.press = () => {
+      explorer.playAnimation(explorer.states.walkUp);
+      explorer.vy = -5;
+      explorer.vx = 0;
+  };
+  up.release = () => {
+      if (!down.isDown && explorer.vx === 0) {
+          explorer.vy = 0;
+          explorer.show(explorer.states.up);
+      }
+  };
+  //Right
+  right.press = () => {
+      explorer.playAnimation(explorer.states.walkRight);
+      explorer.vx = 5;
+      explorer.vy = 0;
+  };
+  right.release = () => { 
+      if (!left.isDown && explorer.vy === 0) {
+          explorer.vx = 0;
+          explorer.show(explorer.states.right);
+      }
+  };
+  //Down
+  down.press = () => {
+      explorer.playAnimation(explorer.states.walkDown);
+      explorer.vy = 5;
+      explorer.vx = 0;
+  };
+  down.release = () => {
+      if (!up.isDown && explorer.vx === 0) {
+          explorer.vy = 0;
+          explorer.show(explorer.states.down);
+      }
+  };
+//设置游戏状态
+  state = play;
+//开始游戏循环 
+  app.ticker.add(delta => gameLoop(delta));
+
+
+function gameLoop(delta){
+//更新当前游戏状态：
+  state(delta);
+}
+function play(delta) {
+//使用资源管理器的速度使其移动
+  explorer.x += explorer.vx;
+  explorer.y += explorer.vy;
+
+//给地牢设置边界
+  contain(explorer, {x: 28, y: 10, width: 488, height: 480});
+  //contain(explorer, stage);
+
+ //在检查碰撞之前将`explorerHit`设置为`false`
+  let explorerHit = false;
+
+  //遍历`enemies`数组中的所有精灵
+  blobs.forEach(function(blob) {
+
+//移动blob
+    blob.y += blob.vy;
+
+   //检查blob的屏幕边界
+    let blobHitsWall = contain(blob, {x: 28, y: 10, width: 488, height: 480});
+//如果泡泡击中舞台的顶部或底部，则反转其方向
+    if (blobHitsWall === "top" || blobHitsWall === "bottom") {
+      blob.vy *= -1;
+    }
+
+//测试碰撞如果任何敌人正在触摸 boy，explorerHit”设置为“true”
+    if(hitTestRectangle(explorer, blob)) {
+      explorerHit = true;
+    }
+  });
+
+//如果boy遭到攻击
+  if(explorerHit) {
+
+//使人物半透明
+    explorer.alpha = 0.5;
+
+    // 将血条的内部矩形的宽度减少1个像素
+    healthBar.outer.width -= 1;
+
+  } else {
+
+    //如果如果boy没受到攻击不透明
+    explorer.alpha = 1;
+  }
+
+  //判断boy和宝箱是否有碰撞
+  if (hitTestRectangle(explorer, treasure)) {
+
+    //如果boy碰撞了宝箱，请宝箱以boy为中心
+    treasure.x = explorer.x + 8;
+    treasure.y = explorer.y + 8;
+  }
+
+  //boy是否有足够的血条？如果`innerBar`的宽度小于零，则结束游戏并显示“你输了！
+  if (healthBar.outer.width < 0) {
+    state = end;
+    message.text = "You lost!";
+  }
+
+//如果boy已将宝藏带到出口，结束游戏并显示“你赢了！”
+  if (hitTestRectangle(treasure, door)) {
+    state = end;
+    message.text = "You won!";
+  } 
+}
+
+function end() {
+  gameScene.visible = false;
+  gameOverScene.visible = true;
+}
+
+function contain(sprite, container) {
+
+let collision = undefined;
+
+//Left
+if (sprite.x < container.x) {
+  sprite.x = container.x;
+  collision = "left";
+}
+
+//Top
+if (sprite.y < container.y) {
+  sprite.y = container.y;
+  collision = "top";
+}
+
+//Right
+if (sprite.x + sprite.width > container.width) {
+  sprite.x = container.width - sprite.width;
+  collision = "right";
+}
+
+//Bottom
+if (sprite.y + sprite.height > container.height) {
+  sprite.y = container.height - sprite.height;
+  collision = "bottom";
+}
+
+//返回`collision`值
+return collision;
+}
+//“命中测试矩形”功能
+function hitTestRectangle(r1, r2) {
+
+//定义我们需要计算的变量
+let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+// hit将 确定 是否存在碰撞
+hit = false;
+
+//找到每个精灵的中心点
+r1.centerX = r1.x + r1.width / 2; 
+r1.centerY = r1.y + r1.height / 2; 
+r2.centerX = r2.x + r2.width / 2; 
+r2.centerY = r2.y + r2.height / 2; 
+
+//找到每个精灵的半高和半高
+r1.halfWidth = r1.width / 2;
+r1.halfHeight = r1.height / 2;
+r2.halfWidth = r2.width / 2;
+r2.halfHeight = r2.height / 2;
+
+//计算精灵之间的距离矢量
+vx = r1.centerX - r2.centerX;
+vy = r1.centerY - r2.centerY;
+
+//计算出半高和半高的组合
+combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+//判断x轴上的碰撞
+if (Math.abs(vx) < combinedHalfWidths) {
+  //判断y轴是否发生碰撞
+  if (Math.abs(vy) < combinedHalfHeights) {
+    //如果发生了碰撞 hit为true
+    hit = true;
+  } else {
+   // 如果没有碰撞 hit为false
+    hit = false;
+  }
+} else {
+ // x轴上没有碰撞 hit为false
+  hit = false;
+}
+
+// 返回 hit值
+return hit;
+};
+
+
+//`randomInt` 辅助函数
+function randomInt(min, max) {
+return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+  //开始游戏循环
+  gameLoop();
+}
+
+    // 将游戏的当前状态设置为play：
+    let state = play;
+    function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        // 更新当前的游戏状态
+        state();
+        // 渲染舞台
+        renderer.render(stage);
+    }
+
+//使精灵移动的函数
+    function play() {
+        explorer.x += explorer.vx;
+        explorer.y += explorer.vy;
+    }
+
+    function keyboard(keyCode) {
+        let key = {};
+        key.code = keyCode;
+        key.isDown = false;
+        key.isUp = true;
+        key.press = undefined;
+        key.release = undefined;
+        // 按下按键时的处理程序
+        key.downHandler = event => { 
+            if (event.keyCode === key.code) {
+                if (key.isUp && key.press) key.press();
+                key.isDown = true;
+                key.isUp = false;
+            }
+            event.preventDefault();
+        };
+        // 按键被松开时的处理程序
+        key.upHandler = event => {
+            if (event.keyCode === key.code) {
+                if (key.isDown && key.release) key.release();
+                key.isDown = false;
+                key.isUp = true;
+            }
+            event.preventDefault();
+        };
+        // 添加事件监听器
+        window.addEventListener("keydown", key.downHandler.bind(key), false);
+        window.addEventListener("keyup", key.upHandler.bind(key), false);
+        // 返回key对象
+        return key;
+    }
+</script>
+</body>
+
+</html>
