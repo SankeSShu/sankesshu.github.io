@@ -248,12 +248,12 @@ function setup() {
       // explorer.vx = 0;
       if (right.isDown) {
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = -3.5;
-        explorer.vx = 3.5;
+        explorer.vy = -3.7;
+        explorer.vx = 3.7;
       }else if(left.isDown){
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = -3.5;
-        explorer.vx = -3.5;
+        explorer.vy = -3.7;
+        explorer.vx = -3.7;
       }else{
         explorer.playAnimation(explorer.states.walkUp);
         explorer.vy = -5;
@@ -291,12 +291,12 @@ function setup() {
   down.press = () => {
       if (left.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = 3.5;
-        explorer.vx = -3.5;
+        explorer.vy = 3.7;
+        explorer.vx = -3.7;
       }else if(right.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = 3.5;
-        explorer.vx = 3.5;
+        explorer.vy = 3.7;
+        explorer.vx = 3.7;
       }else {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = 5;
