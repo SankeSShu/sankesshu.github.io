@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="zn">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+<!-- <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"> -->
 </head>
 
 <body>
 <div id="px-render"></div>
 <script src="../pixi/pixi.min.js"></script>
-<script src="../hexi/spriteUtilities.js"></script>
+<script src="../pixi/spriteUtilities.js"></script>
 <script>
   // //创建一个 Pixi应用 需要的一些参数
   // let option = {
@@ -50,11 +50,11 @@ let stage = app.stage;
   let imgURL = "./images/boy.png";
 //加载图像，加载完成后执行setup函数 
 PIXI.loader
-.add("./images/treasureHunter.json")
+.add("images/treasureHunter.json")
 .add(imgURL)
 .load(setup);
 //创建的精灵，会在多个函数中用到
-let explorer,gameScene,blobs;
+let explorer,gameScene,blobs,dungeon;
 // state, treasure, blobs, chimes, exit, player, dungeon,
 //     door, healthBar, message, gameScene, gameOverScene, enemies, id;
 function setup() {
@@ -63,7 +63,7 @@ function setup() {
   app.stage.addChild(gameScene);
   //Make the sprites and add them to the `gameScene`
   //Create an alias for the texture atlas frame ids
-  id = resources["./images/treasureHunter.json"].textures;
+  id = resources["images/treasureHunter.json"].textures;
 
   //Dungeon
   dungeon = new Sprite(id["dungeon.png"]);
@@ -90,6 +90,7 @@ function setup() {
   
   //创建纹理数组
   let frames = su.filmstrip(imgURL,16,16);
+  let boynb = 30;
   //使用sprite函数创建精灵
   explorer = su.sprite(frames);
   explorer.vx = 0;
@@ -109,18 +110,27 @@ function setup() {
       walkDown: [0, 2],
       walkLeft: [3, 5],
       walkRight: [6, 8],
-      walkUp: [9, 11]
+      walkUp: [9, 11],
   };
-  explorer.width = 30;
-  explorer.height= 30;
+  explorer.width = boynb;
+  explorer.height= boynb;
   gameScene.addChild(explorer);
+
+  let rectangle = new Graphics();
+  rectangle.lineStyle(1, 0xFF3300, 1);
+  // rectangle.beginFill(0x66CCFF);
+  rectangle.drawRect(0, 0, boynb, boynb);
+  rectangle.endFill();
+  rectangle.x = boynb;
+  rectangle.y = boynb;
+  gameScene.addChild(rectangle);
   //Make the blobs
   let numberOfBlobs = 6,
       spacing = 48,
       xOffset = 150,
       speed = 2,
       direction = 1;
-
+  let rectanglee = new Graphics();
   //An array to store all the blob monsters
   blobs = [];
 
@@ -128,16 +138,19 @@ function setup() {
   for (let i = 0; i < numberOfBlobs; i++) {
 
     //Make a blob
+    
     let blob = new Sprite(id["blob.png"]);
 
-//`xOffset`确定屏幕左侧
-//应添加第一个blob的点
-//根据`spacing`值水平对齐每个blob。
-//`xOffset`确定屏幕左侧的点
-//应该添加第一个blob
-    let x = spacing * i + xOffset;
+    // blob.x = gameScene.width - treasure.width - 68;
+    // blob.y = gameScene.height / 2 - treasure.height / 2;
+    //`xOffset`确定屏幕左侧
+    //应添加第一个blob的点
+    //根据`spacing`值水平对齐每个blob。
+    //`xOffset`确定屏幕左侧的点
+    //应该添加第一个blob
 
-    //Give the blob a random y position
+    let x = spacing * i + xOffset;
+//给blob一个随机的y位置
     let y = randomInt(0, app.stage.height - blob.height);
 
 //设置blob的位置
@@ -145,19 +158,24 @@ function setup() {
     blob.y = y;
 
 //设置blob的垂直速度。`direction`将是'1`或
-//`-1`。“1”表示敌人向下移动，“-1”表示blob将向上移动。
+//`-1`。“1”表示blob向下移动，“-1”表示blob将向上移动。
 // 将`direction`乘以`speed`确定blob的垂直方向
-    blob.vy = speed * direction;
-
-//反转下一个blob的方向
+    // blob.vy = speed * direction;
+    // blob.vx = speed / direction;
+    blob.vy = -2;
+    blob.vx = 5;
     direction *= -1;
-
+    //   rectanglee.x = blob.x + 0;
+    //   rectanglee.y = blob.y + 0;
 //将blob推入`blobs`数组
     blobs.push(blob);
 
 //将blob添加到`gameScene`
+
     gameScene.addChild(blob);
+
   }
+
 
 //创建hp条
   healthBar = new Container();
@@ -225,13 +243,35 @@ function setup() {
   //其余的箭头键遵循相同的格式
   //Up
   up.press = () => {
-      explorer.playAnimation(explorer.states.walkUp);
-      explorer.vy = -5;
-      explorer.vx = 0;
+      // explorer.playAnimation(explorer.states.walkUp);
+      // explorer.vy = -5;
+      // explorer.vx = 0;
+      if (right.isDown) {
+        explorer.playAnimation(explorer.states.walkUp);
+        explorer.vy = -4;
+        explorer.vx = 4;
+      }else if(left.isDown){
+        explorer.playAnimation(explorer.states.walkUp);
+        explorer.vy = -4;
+        explorer.vx = -4;
+      }else{
+        explorer.playAnimation(explorer.states.walkUp);
+        explorer.vy = -5;
+        explorer.vx = 0;
+      }
   };
   up.release = () => {
-      if (!down.isDown && explorer.vx === 0) {
+      if (!down.isDown && explorer.vx === 5) {
           explorer.vy = 0;
+          explorer.vx = 0;
+          explorer.show(explorer.states.up);
+      }else if (!down.isDown && explorer.vx === -5) {
+          explorer.vy = 0;
+          explorer.vx = 0;
+          explorer.show(explorer.states.up);
+      }else{
+          explorer.vy = 0;
+          explorer.vx = 0;
           explorer.show(explorer.states.up);
       }
   };
@@ -249,13 +289,32 @@ function setup() {
   };
   //Down
   down.press = () => {
-      explorer.playAnimation(explorer.states.walkDown);
-      explorer.vy = 5;
-      explorer.vx = 0;
+      if (left.isDown) {
+        explorer.playAnimation(explorer.states.walkDown);
+        explorer.vy = 4;
+        explorer.vx = -4;
+      }else if(right.isDown) {
+        explorer.playAnimation(explorer.states.walkDown);
+        explorer.vy = 4;
+        explorer.vx = 4;
+      }else {
+        explorer.playAnimation(explorer.states.walkDown);
+        explorer.vy = 5;
+        explorer.vx = 0;
+      }
   };
   down.release = () => {
-      if (!up.isDown && explorer.vx === 0) {
+      if (!up.isDown && explorer.vx === -5) {
           explorer.vy = 0;
+          explorer.vx = 0;
+          explorer.show(explorer.states.down);
+      }else if (!up.isDown && explorer.vx === 5) {
+          explorer.vy = 0;
+          explorer.vx = 0;
+          explorer.show(explorer.states.down);
+      }else{
+          explorer.vy = 0;
+          explorer.vx = 0;
           explorer.show(explorer.states.down);
       }
   };
@@ -283,22 +342,84 @@ function play(delta) {
 
   //遍历`enemies`数组中的所有精灵
   blobs.forEach(function(blob) {
-
+  //   let rectanglee = new Graphics();
+  //   rectanglee.lineStyle(1, 0xFF3300, 1);
+  // // rectangle.beginFill(0x66CCFF);
+  //   rectanglee.drawRect(0, 0, 30, 30);
+  //   rectanglee.endFill();
+  //   // rectanglee.x = blob.x;
+  //   // rectanglee.y = blob.y;
+  //   rectanglee.x = blob.x;
+  //   rectanglee.y = blob.y;
+  //   gameScene.addChild(rectanglee);
 //移动blob
     blob.y += blob.vy;
+    blob.x += blob.vx;
+    // blob.y += blob.vy;
+    // blob.x += blob.vx;
 
-   //检查blob的屏幕边界
+let a ,b,c;
+    b = 0;
+    a = 1;
+    c = 0;
+   //检查blob屏幕边界
     let blobHitsWall = contain(blob, {x: 28, y: 10, width: 488, height: 480});
 //如果泡泡击中舞台的顶部或底部，则反转其方向
-    if (blobHitsWall === "top" || blobHitsWall === "bottom") {
-      blob.vy *= -1;
+    if (blobHitsWall == "top"){
+      while (b < a){
+      rnd = Math.floor(Math.random()*2);
+      if(rnd == c){
+       b = -1;
+      }else{
+       b = 1;
+      }
+      console.log(b);
     }
-
+      blob.vy *= -1;
+      blob.vx *= b;
+    }else if(blobHitsWall == "bottom"){
+      while (b < a){
+      rnd = Math.floor(Math.random()*2);
+      if(rnd == c){
+       b = -1;
+      }else{
+       b = 1;
+      }
+      console.log(b);
+    }
+      blob.vy *= -1;
+      blob.vx *= b;
+    } else if(blobHitsWall == "left"){
+      while (b < a){
+      rnd = Math.floor(Math.random()*2);
+      if(rnd == c){
+       b = -1;
+      }else{
+       b = 1;
+      }
+      console.log(b);
+    }
+      blob.vy *= b;
+      blob.vx *= -1;
+    }else if(blobHitsWall ==  "right"){
+      while (b < a){
+      rnd = Math.floor(Math.random()*2);
+      if(rnd == c){
+       b = -1;
+      }else{
+       b = 1;
+      }
+      console.log(b);
+    }
+      blob.vy *= b;
+      blob.vx *= -1;
+    }
 //测试碰撞如果任何敌人正在触摸 boy，explorerHit”设置为“true”
     if(hitTestRectangle(explorer, blob)) {
       explorerHit = true;
     }
   });
+
 
 //如果boy遭到攻击
   if(explorerHit) {
@@ -307,7 +428,7 @@ function play(delta) {
     explorer.alpha = 0.5;
 
     // 将血条的内部矩形的宽度减少1个像素
-    healthBar.outer.width -= 1;
+    healthBar.outer.width -= 0;
 
   } else {
 
@@ -322,12 +443,22 @@ function play(delta) {
     treasure.x = explorer.x + 8;
     treasure.y = explorer.y + 8;
   }
+  if (hitTestRectangle(explorer, rectangle)){
+      //给人物加一个边距
+      rectangle.x = explorer.x + 0;
+      rectangle.y = explorer.y + 0;
+    }
+    // if (hitTestRectangle(blob, rectanglee)){
+    //   //给人物加一个边距
+    //   rectanglee.x = blob.x + 0;
+    //   rectanglee.y = blob.y + 0;
+    // }
 
   //boy是否有足够的血条？如果`innerBar`的宽度小于零，则结束游戏并显示“你输了！
   if (healthBar.outer.width < 0) {
     state = end;
     message.text = "You lost!";
-  }
+  } 
 
 //如果boy已将宝藏带到出口，结束游戏并显示“你赢了！”
   if (hitTestRectangle(treasure, door)) {
