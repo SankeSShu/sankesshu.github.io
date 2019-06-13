@@ -345,16 +345,6 @@ function play(delta) {
 
   //遍历`enemies`数组中的所有精灵
   blobs.forEach(function(blob) {
-  //   let rectanglee = new Graphics();
-  //   rectanglee.lineStyle(1, 0xFF3300, 1);
-  // // rectangle.beginFill(0x66CCFF);
-  //   rectanglee.drawRect(0, 0, 30, 30);
-  //   rectanglee.endFill();
-  //   // rectanglee.x = blob.x;
-  //   // rectanglee.y = blob.y;
-  //   rectanglee.x = blob.x;
-  //   rectanglee.y = blob.y;
-  //   gameScene.addChild(rectanglee);
 //移动blob
     blob.y += blob.vy;
     blob.x += blob.vx;
@@ -376,7 +366,6 @@ let a ,b,c;
       }else{
        b = 1;
       }
-      console.log(b);
     }
       blob.vy *= -1;
       blob.vx *= b;
@@ -388,7 +377,6 @@ let a ,b,c;
       }else{
        b = 1;
       }
-      console.log(b);
     }
       blob.vy *= -1;
       blob.vx *= b;
@@ -400,7 +388,6 @@ let a ,b,c;
       }else{
        b = 1;
       }
-      console.log(b);
     }
       blob.vy *= b;
       blob.vx *= -1;
@@ -412,7 +399,6 @@ let a ,b,c;
       }else{
        b = 1;
       }
-      console.log(b);
     }
       blob.vy *= b;
       blob.vx *= -1;
@@ -443,28 +429,6 @@ let a ,b,c;
   if (hitTestRectangle(explorer, treasure)) {
 
     //如果boy碰撞了宝箱，请宝箱以boy为中心
-    treasure.x = explorer.x + 8;
-    treasure.y = explorer.y + 8;
-
-    r1.centerX = r1.x + r1.width / 2; 
-    r1.centerY = r1.y + r1.height / 2; 
-    r2.centerX = r2.x + r2.width / 2; 
-    r2.centerY = r2.y + r2.height / 2; 
-
-    //找到每个精灵的半高和半高
-    r1.halfWidth = r1.width / 2;
-    r1.halfHeight = r1.height / 2;
-    r2.halfWidth = r2.width / 2;
-    r2.halfHeight = r2.height / 2;
-
-    //计算精灵之间的距离矢量
-    vx = r1.centerX - r2.centerX;
-    vy = r1.centerY - r2.centerY;
-
-    //计算出半高和半高的组合
-    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-    console.log(combinedHalfWidths,combinedHalfHeights);
   }
   if (hitTestRectangle(explorer, rectangle)){
       //给人物加一个边距
