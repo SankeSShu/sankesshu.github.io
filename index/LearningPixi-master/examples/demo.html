@@ -223,12 +223,7 @@ function setup() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-    // // let znb = 1,
-    //   fnb = -1 ,
-    //   vnb = znb * (Math.sqrt(2)/2);
-    //   snb = fnb * (Math.sqrt(2)/2);
-    // //   let a = Math.cos(45);
-    //   console.log(snb,vnb,a);
+
   //左箭头键 按下 
   left.press = () => {
       //播放精灵的 walkLeft 动画序列并设置精灵的速度
@@ -253,12 +248,12 @@ function setup() {
       // explorer.vx = 0;
       if (right.isDown) {
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = bnb;
-        explorer.vx = vnb;
+        explorer.vy = -3.7;
+        explorer.vx = 3.7;
       }else if(left.isDown){
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = bnb;
-        explorer.vx = bnb;
+        explorer.vy = -3.7;
+        explorer.vx = -3.7;
       }else{
         explorer.playAnimation(explorer.states.walkUp);
         explorer.vy = -5;
@@ -296,12 +291,12 @@ function setup() {
   down.press = () => {
       if (left.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = vnb;
-        explorer.vx = bnb;
+        explorer.vy = 3.7;
+        explorer.vx = -3.7;
       }else if(right.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = vnb;
-        explorer.vx = vnb;
+        explorer.vy = 3.7;
+        explorer.vx = 3.7;
       }else {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = 5;
