@@ -223,19 +223,17 @@ function setup() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-  //   // let znb = 1,
-    //   fnb = -1 ,
-      let vnb = Math.cos(5*Math.PI / 180*45);
-      let bnb = Math.sin(-5*Math.PI / 180*45);
-    //   vnb = znb * (Math.sqrt(2)/2);
-    //   snb = fnb * (Math.sqrt(2)/2);
+  let znb = 5,
+      fnb = -5 ,
+      vnb = znb * (Math.sqrt(2)/2),
+      snb = fnb * (Math.sqrt(2)/2);
     //   let a = Math.cos(45);
     //   console.log(snb,vnb,a);
   //左箭头键 按下 
   left.press = () => {
       //播放精灵的 walkLeft 动画序列并设置精灵的速度
       explorer.playAnimation(explorer.states.walkLeft);
-      explorer.vx = -5;
+      explorer.vx = fnb;
       explorer.vy = 0;
   };
   //左箭头键 释放 
@@ -255,15 +253,15 @@ function setup() {
       // explorer.vx = 0;
       if (right.isDown) {
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = bnb;
+        explorer.vy = snb;
         explorer.vx = vnb;
       }else if(left.isDown){
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = bnb;
-        explorer.vx = bnb;
+        explorer.vy = snb;
+        explorer.vx = snb;
       }else{
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = -5;
+        explorer.vy = fnb;
         explorer.vx = 0;
       }
   };
@@ -285,7 +283,7 @@ function setup() {
   //Right
   right.press = () => {
       explorer.playAnimation(explorer.states.walkRight);
-      explorer.vx = 5;
+      explorer.vx = znb;
       explorer.vy = 0;
   };
   right.release = () => { 
@@ -299,14 +297,14 @@ function setup() {
       if (left.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = vnb;
-        explorer.vx = bnb;
+        explorer.vx = snb;
       }else if(right.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = vnb;
         explorer.vx = vnb;
       }else {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = 5;
+        explorer.vy = znb;
         explorer.vx = 0;
       }
   };
