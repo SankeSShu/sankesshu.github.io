@@ -223,15 +223,17 @@ function setup() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-  let znb = 5,
-      fnb = -5 ,
-      vnb = znb * (Math.sqrt(2)/2),
-      snb = fnb * (Math.sqrt(2)/2);
+    // // let znb = 1,
+    //   fnb = -1 ,
+    //   vnb = znb * (Math.sqrt(2)/2);
+    //   snb = fnb * (Math.sqrt(2)/2);
+    // //   let a = Math.cos(45);
+    //   console.log(snb,vnb,a);
   //左箭头键 按下 
   left.press = () => {
       //播放精灵的 walkLeft 动画序列并设置精灵的速度
       explorer.playAnimation(explorer.states.walkLeft);
-      explorer.vx = fnb;
+      explorer.vx = -5;
       explorer.vy = 0;
   };
   //左箭头键 释放 
@@ -251,15 +253,15 @@ function setup() {
       // explorer.vx = 0;
       if (right.isDown) {
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = snb;
+        explorer.vy = bnb;
         explorer.vx = vnb;
       }else if(left.isDown){
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = snb;
-        explorer.vx = snb;
+        explorer.vy = bnb;
+        explorer.vx = bnb;
       }else{
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = fnb;
+        explorer.vy = -5;
         explorer.vx = 0;
       }
   };
@@ -281,7 +283,7 @@ function setup() {
   //Right
   right.press = () => {
       explorer.playAnimation(explorer.states.walkRight);
-      explorer.vx = znb;
+      explorer.vx = 5;
       explorer.vy = 0;
   };
   right.release = () => { 
@@ -295,14 +297,14 @@ function setup() {
       if (left.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = vnb;
-        explorer.vx = snb;
+        explorer.vx = bnb;
       }else if(right.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
         explorer.vy = vnb;
         explorer.vx = vnb;
       }else {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = znb;
+        explorer.vy = 5;
         explorer.vx = 0;
       }
   };
@@ -376,6 +378,7 @@ let a ,b,c;
       }else{
        b = 1;
       }
+      console.log(b);
     }
       blob.vy *= -1;
       blob.vx *= b;
@@ -387,6 +390,7 @@ let a ,b,c;
       }else{
        b = 1;
       }
+      console.log(b);
     }
       blob.vy *= -1;
       blob.vx *= b;
@@ -398,6 +402,7 @@ let a ,b,c;
       }else{
        b = 1;
       }
+      console.log(b);
     }
       blob.vy *= b;
       blob.vx *= -1;
@@ -409,6 +414,7 @@ let a ,b,c;
       }else{
        b = 1;
       }
+      console.log(b);
     }
       blob.vy *= b;
       blob.vx *= -1;
@@ -441,26 +447,6 @@ let a ,b,c;
     //如果boy碰撞了宝箱，请宝箱以boy为中心
     treasure.x = explorer.x + 8;
     treasure.y = explorer.y + 8;
-
-    r1.centerX = r1.x + r1.width / 2; 
-    r1.centerY = r1.y + r1.height / 2; 
-    r2.centerX = r2.x + r2.width / 2; 
-    r2.centerY = r2.y + r2.height / 2; 
-
-    //找到每个精灵的半高和半高
-    r1.halfWidth = r1.width / 2;
-    r1.halfHeight = r1.height / 2;
-    r2.halfWidth = r2.width / 2;
-    r2.halfHeight = r2.height / 2;
-
-    //计算精灵之间的距离矢量
-    vx = r1.centerX - r2.centerX;
-    vy = r1.centerY - r2.centerY;
-
-    //计算出半高和半高的组合
-    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-    console.log(combinedHalfWidths,combinedHalfHeights);
   }
   if (hitTestRectangle(explorer, rectangle)){
       //给人物加一个边距
