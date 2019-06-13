@@ -223,10 +223,10 @@ function setup() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-    let znb = 5,
-        fnb = -5;
-      zvx = Math.cos(znb*Math.PI / 180*45);
-      fvy = Math.sin(fnb*Math.PI / 180*45);
+  //   // let znb = 1,
+    //   fnb = -1 ,
+      let vnb = Math.cos(5*Math.PI / 180*45);
+      let bnb = Math.sin(-5*Math.PI / 180*45);
     //   vnb = znb * (Math.sqrt(2)/2);
     //   snb = fnb * (Math.sqrt(2)/2);
     //   let a = Math.cos(45);
@@ -235,7 +235,7 @@ function setup() {
   left.press = () => {
       //播放精灵的 walkLeft 动画序列并设置精灵的速度
       explorer.playAnimation(explorer.states.walkLeft);
-      explorer.vx = fnb;
+      explorer.vx = -5;
       explorer.vy = 0;
   };
   //左箭头键 释放 
@@ -255,24 +255,24 @@ function setup() {
       // explorer.vx = 0;
       if (right.isDown) {
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = fvy;
-        explorer.vx = zvx;
+        explorer.vy = bnb;
+        explorer.vx = vnb;
       }else if(left.isDown){
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = fvy;
-        explorer.vx = fvy;
+        explorer.vy = bnb;
+        explorer.vx = bnb;
       }else{
         explorer.playAnimation(explorer.states.walkUp);
-        explorer.vy = fnb;
+        explorer.vy = -5;
         explorer.vx = 0;
       }
   };
   up.release = () => {
-      if (!down.isDown && explorer.vx === zvx) {
+      if (!down.isDown && explorer.vx === 5) {
           explorer.vy = 0;
           explorer.vx = 0;
           explorer.show(explorer.states.up);
-      }else if (!down.isDown && explorer.vx === fvx) {
+      }else if (!down.isDown && explorer.vx === -5) {
           explorer.vy = 0;
           explorer.vx = 0;
           explorer.show(explorer.states.up);
@@ -285,7 +285,7 @@ function setup() {
   //Right
   right.press = () => {
       explorer.playAnimation(explorer.states.walkRight);
-      explorer.vx = znb;
+      explorer.vx = 5;
       explorer.vy = 0;
   };
   right.release = () => { 
@@ -298,24 +298,24 @@ function setup() {
   down.press = () => {
       if (left.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = zvx;
-        explorer.vx = fvy;
+        explorer.vy = vnb;
+        explorer.vx = bnb;
       }else if(right.isDown) {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = zvx;
-        explorer.vx = zvx;
+        explorer.vy = vnb;
+        explorer.vx = vnb;
       }else {
         explorer.playAnimation(explorer.states.walkDown);
-        explorer.vy = znb;
+        explorer.vy = 5;
         explorer.vx = 0;
       }
   };
   down.release = () => {
-      if (!up.isDown && explorer.vx === fvx) {
+      if (!up.isDown && explorer.vx === -5) {
           explorer.vy = 0;
           explorer.vx = 0;
           explorer.show(explorer.states.down);
-      }else if (!up.isDown && explorer.vx === zvx) {
+      }else if (!up.isDown && explorer.vx === 5) {
           explorer.vy = 0;
           explorer.vx = 0;
           explorer.show(explorer.states.down);
